@@ -1,13 +1,25 @@
+import { supabase } from "../lib/supabase";
+
 export const authRepository = {
-  async singup(name, email, password){
-    const{data, error} = await supabase.auth.singup({
+  async signup(name, email, password){
+    const{data, error} = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { name } },
+      options: { 
+        //user_metadata: { name } 
+        data: { name } 
+      }
     });
-    if (error != null) throw new Error(error.message);
-    return {
-      ...data.user, userName: data.user.user_metadata.name
-    };
+
+    if (error) {
+      console.error('Signup error:', error.message);
+      throw new Error(error.message);
+    }
+
+    if (data && data.user) {
+      return data.user ? { ...data.user, userName: data.user.user_metadata.name } : null;
+    } else {
+      return null;
+    }
   }
 }
